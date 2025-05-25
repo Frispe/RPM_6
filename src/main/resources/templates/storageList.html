@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Хранилища</title>
+</head>
+<body>
+<div style="text-align: center; margin-bottom: 20px;">
+  <a href="/" style="display: inline-block; padding: 8px 16px; background-color: #1d0964; color: white;
+      text-decoration: none; border-radius: 4px; transition: background-color 0.3s; font-family: 'Comfortaa', sans-serif;">
+    На главную
+  </a>
+</div>
+<h1>Список хранилищ</h1>
+
+<form action="/storageList/add" method="post">
+  <select name="storageTypeId" required>
+    <option value="">Выберите тип хранилища</option>
+    <option th:each="type : ${storageTypes}"
+            th:value="${type.id}"
+            th:text="${type.typeName}"></option>
+  </select>
+  <select name="brandId" required>
+    <option value="">Выберите бренд</option>
+    <option th:each="brand : ${brands}"
+            th:value="${brand.id}"
+            th:text="${brand.name}"></option>
+  </select>
+  <input type="text" name="model" placeholder="Модель" required>
+  <input type="number" name="capacity" placeholder="Объем (GB)" required>
+  <input type="number" name="writeSpeed" placeholder="Скорость записи (MB/s)" required>
+  <input type="number" name="readSpeed" placeholder="Скорость чтения (MB/s)" required>
+  <input type="number" step="0.01" name="price" placeholder="Цена" required>
+  <button type="submit">Добавить хранилище</button>
+</form>
+
+<form action="/storageList/searchById" method="get" style="margin-bottom: 20px;">
+  <input type="number" name="id" placeholder="Введите ID хранилища" required>
+  <button type="submit">Найти по ID</button>
+</form>
+
+<form action="/storageList/searchByModel" method="get" style="margin-bottom: 20px;">
+  <input type="text" name="model" placeholder="Введите модель" required>
+  <button type="submit">Найти по модели</button>
+</form>
+
+<form action="/storageList/searchByType" method="get" style="margin-bottom: 20px;">
+  <select name="storageTypeId" required>
+    <option value="">Выберите тип хранилища</option>
+    <option th:each="type : ${storageTypes}"
+            th:value="${type.id}"
+            th:text="${type.typeName}"></option>
+  </select>
+  <button type="submit">Найти по типу</button>
+</form>
+
+<h2>Все хранилища:</h2>
+<ul>
+  <th:block th:each="s : ${storages}">
+    <li>
+      <span th:text="'ID: ' + ${s.id} +
+                    ', Тип: ' + ${s.storageType.typeName} +
+                    ', Бренд: ' + ${s.brand.name} +
+                    ', Модель: ' + ${s.model} +
+                    ', Объем: ' + ${s.capacity} + 'GB' +
+                    ', Запись: ' + ${s.writeSpeed} + 'MB/s' +
+                    ', Чтение: ' + ${s.readSpeed} + 'MB/s' +
+                    ', Цена: ' + ${s.price} + ' руб.'"></span>
+
+      <form action="/storageList/update" method="post" style="display:inline;">
+        <input type="hidden" name="id" th:value="${s.id}"/>
+        <select name="storageTypeId" required>
+          <option th:each="type : ${storageTypes}"
+                  th:value="${type.id}"
+                  th:text="${type.typeName}"
+                  th:selected="${type.id == s.storageType.id}"></option>
+        </select>
+        <select name="brandId" required>
+          <option th:each="brand : ${brands}"
+                  th:value="${brand.id}"
+                  th:text="${brand.name}"
+                  th:selected="${brand.id == s.brand.id}"></option>
+        </select>
+        <input type="text" name="model" th:value="${s.model}" required>
+        <input type="number" name="capacity" th:value="${s.capacity}" required>
+        <input type="number" name="writeSpeed" th:value="${s.writeSpeed}" required>
+        <input type="number" name="readSpeed" th:value="${s.readSpeed}" required>
+        <input type="number" step="0.01" name="price" th:value="${s.price}" required>
+        <button type="submit">Обновить</button>
+      </form>
+
+      <form action="/storageList/delete" method="post" style="display:inline;">
+        <input type="hidden" name="id" th:value="${s.id}"/>
+        <button type="submit">Удалить</button>
+      </form>
+    </li>
+  </th:block>
+</ul>
+
+<div>
+  <span>Страница: </span>
+  <th:block th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+    <a th:if="${i != currentPage}" th:href="@{/storageList(page=${i})}" th:text="${i + 1}"></a>
+    <span th:unless="${i != currentPage}" th:text="${i + 1}"></span>
+  </th:block>
+</div>
+<style>
+  body {
+    font-family: 'Comfortaa', sans-serif;
+    background-color: #010612;
+    color: white;
+    padding: 20px;
+    line-height: 1.6;
+  }
+
+  h1, h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  form {
+    margin-bottom: 15px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  input[type="text"],
+  input[type="number"] {
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: white;
+    color: #333;
+    font-family: 'Comfortaa', sans-serif;
+  }
+
+  input[type="text"]:focus,
+  input[type="number"]:focus {
+    outline: none;
+    border-color: #aaa;
+  }
+
+  button {
+    padding: 8px 16px;
+    background-color: #1d0964;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Comfortaa', sans-serif;
+    transition: background-color 0.3s;
+  }
+
+  button:hover {
+    background-color: #555;
+  }
+
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+
+  li {
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+  }
+
+  li form {
+    margin-bottom: 0;
+  }
+
+  div {
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  a {
+    color: #4dabf7;
+    text-decoration: none;
+    margin: 0 5px;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  span {
+    margin-right: 5px;
+  }
+</style>
+</body>
+</html>

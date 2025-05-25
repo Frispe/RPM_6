@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Типы хранилищ</title>
+</head>
+<body>
+<div style="text-align: center; margin-bottom: 20px;">
+  <a href="/" style="display: inline-block; padding: 8px 16px; background-color: #1d0964; color: white;
+      text-decoration: none; border-radius: 4px; transition: background-color 0.3s; font-family: 'Comfortaa', sans-serif;">
+    На главную
+  </a>
+</div>
+<h1>Типы хранилищ</h1>
+
+<form action="/storageTypeList/add" method="post">
+  <input type="text" name="typeName" placeholder="Название типа" required>
+  <button type="submit">Добавить тип</button>
+</form>
+
+<form action="/storageTypeList/searchById" method="get" style="margin-bottom: 20px;">
+  <input type="number" name="id" placeholder="Введите ID типа" required>
+  <button type="submit">Найти по ID</button>
+</form>
+
+<form action="/storageTypeList/searchByName" method="get" style="margin-bottom: 20px;">
+  <input type="text" name="typeName" placeholder="Введите название типа" required>
+  <button type="submit">Найти по названию</button>
+</form>
+
+<h2>Все типы хранилищ:</h2>
+<ul>
+  <th:block th:each="storageType : ${storageTypes}">
+    <li>
+      <span th:text="|ID: ${storageType.id}, Название: ${storageType.typeName}|"></span>
+
+      <form action="/storageTypeList/update" method="post" style="display:inline;">
+        <input type="hidden" name="id" th:value="${storageType.id}"/>
+        <input type="text" name="typeName" th:value="${storageType.typeName}" required>
+        <button type="submit">Обновить</button>
+      </form>
+
+      <form action="/storageTypeList/delete" method="post" style="display:inline;">
+        <input type="hidden" name="id" th:value="${storageType.id}"/>
+        <button type="submit">Удалить</button>
+      </form>
+    </li>
+  </th:block>
+</ul>
+
+<div>
+  <span>Страница: </span>
+  <th:block th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+    <a th:if="${i != currentPage}" th:href="@{/storageTypeList(page=${i})}" th:text="${i + 1}"></a>
+    <span th:unless="${i != currentPage}" th:text="${i + 1}"></span>
+  </th:block>
+</div>
+<style>
+  body {
+    font-family: 'Comfortaa', sans-serif;
+    background-color: #010612;
+    color: white;
+    padding: 20px;
+    line-height: 1.6;
+  }
+
+  h1, h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  form {
+    margin-bottom: 15px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  input[type="text"],
+  input[type="number"] {
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: white;
+    color: #333;
+    font-family: 'Comfortaa', sans-serif;
+  }
+
+  input[type="text"]:focus,
+  input[type="number"]:focus {
+    outline: none;
+    border-color: #aaa;
+  }
+
+  button {
+    padding: 8px 16px;
+    background-color: #1d0964;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Comfortaa', sans-serif;
+    transition: background-color 0.3s;
+  }
+
+  button:hover {
+    background-color: #555;
+  }
+
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+
+  li {
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+  }
+
+  li form {
+    margin-bottom: 0;
+  }
+
+  div {
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  a {
+    color: #4dabf7;
+    text-decoration: none;
+    margin: 0 5px;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  span {
+    margin-right: 5px;
+  }
+</style>
+</body>
+</html>
